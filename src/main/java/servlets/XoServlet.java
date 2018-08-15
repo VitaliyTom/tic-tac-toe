@@ -2,6 +2,7 @@ package servlets;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,7 +21,7 @@ public class XoServlet extends HttpServlet {
 
     //ПОСТ
     @RequestMapping(value = "/run", method = RequestMethod.POST)
-    public String xoPost(@ModelAttribute("fkey") Game h, Model model) {
+    public String xoPost(@ModelAttribute("fkey") Game h, BindingResult r,Model model) {
 
         Map<String, String> mapGame = new HashMap();
 
@@ -34,6 +35,7 @@ public class XoServlet extends HttpServlet {
         mapGame.put("7", h.getK8());
         mapGame.put("8", h.getK9());
         mapGame.put("9","x");
+
 
         winner(mapGame,model);
 
@@ -50,6 +52,8 @@ public class XoServlet extends HttpServlet {
         h.setK7(String.valueOf(mapGame.get("6")));
         h.setK8(String.valueOf(mapGame.get("7")));
         h.setK9(String.valueOf(mapGame.get("8")));
+
+        
 
       model.addAttribute("fKey", h);
         return "pages/game";
@@ -77,9 +81,12 @@ public class XoServlet extends HttpServlet {
         return "pages/game";
     }
 
-
     //ПРОВЕРКА НА ПОБЕДИТЕЛЯ
     private String winner( Map mapGame, Model model) {
+
+
+       // String x = "x";
+
 
         //проверка горизонтали
         for (int i = 0; i < 9; i += 3) {
@@ -97,12 +104,12 @@ public class XoServlet extends HttpServlet {
                 return "pages/winner";
             }
         }
-        //проверка вертикали 2-4-6
+        //проверка диагонали 2-4-6
         if (mapGame.get(2).equals(mapGame.get(9)) && mapGame.get(4).equals(mapGame.get(9)) && mapGame.get(6).equals(mapGame.get(9))) {
 
             return "pages/winner";
         }
-        //проверка вертикали 0-4-8
+        //проверка диагонали 0-4-8
         if (mapGame.get(0).equals(mapGame.get(9)) && mapGame.get(4).equals(mapGame.get(9)) && mapGame.get(8).equals(mapGame.get(9))) {
 
             return "pages/winner";
