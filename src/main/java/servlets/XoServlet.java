@@ -21,7 +21,7 @@ public class XoServlet extends HttpServlet {
 
     //ПОСТ
     @RequestMapping(value = "/run", method = RequestMethod.POST)
-    public String xoPost(@ModelAttribute("fkey") Game h, BindingResult r,Model model) {
+    public String xoPost(@ModelAttribute("fkey") Game h,Model model) {
 
         Map<String, String> mapGame = new HashMap();
 
@@ -53,7 +53,7 @@ public class XoServlet extends HttpServlet {
         h.setK8(String.valueOf(mapGame.get("7")));
         h.setK9(String.valueOf(mapGame.get("8")));
 
-        
+
 
       model.addAttribute("fKey", h);
         return "pages/game";
