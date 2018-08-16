@@ -19,10 +19,16 @@ public class XoServlet extends HttpServlet {
 
  //   private List<Integer> key = new ArrayList<>();
 
+
+
+
+
+
+
     //ПОСТ
     @RequestMapping(value = "/run", method = RequestMethod.POST)
     public String xoPost(@ModelAttribute("fkey") Game h,Model model) {
-
+        String winn;
         Map<String, String> mapGame = new HashMap();
 
         mapGame.put("0", h.getK1());
@@ -35,13 +41,19 @@ public class XoServlet extends HttpServlet {
         mapGame.put("7", h.getK8());
         mapGame.put("8", h.getK9());
         mapGame.put("9","x");
+        winn = "победил пользователь";
 
-
-        winner(mapGame,model);
+        if(winner(mapGame,model, winn)==true){
+            return "pages/winner";
+        }
 
         runBot(mapGame);
 
-        winner(mapGame,model);
+        winn = "победил бот";
+
+        if(winner(mapGame,model, winn)==true){
+            return "pages/winner";
+        }
 
         h.setK1(String.valueOf(mapGame.get("0")));
         h.setK2(String.valueOf(mapGame.get("1")));
@@ -53,11 +65,14 @@ public class XoServlet extends HttpServlet {
         h.setK8(String.valueOf(mapGame.get("7")));
         h.setK9(String.valueOf(mapGame.get("8")));
 
-
-
       model.addAttribute("fKey", h);
         return "pages/game";
     }
+
+
+
+
+
 
     //Ход бота
     private void runBot(Map mapGame) {
@@ -66,8 +81,8 @@ public class XoServlet extends HttpServlet {
 
         for (int i = 0; i < 1; i--) {
             int j = rnd.nextInt(8);
-            if (mapGame.get(j)==null|| mapGame.get(j)=="") {
-                mapGame.put(j, "o");
+            if (mapGame.get(String.valueOf(j)).equals(null)|| mapGame.get(String.valueOf(j)).equals("")) {
+                mapGame.put(String.valueOf(j), "o");
                 return;
             }
        }
@@ -82,45 +97,46 @@ public class XoServlet extends HttpServlet {
     }
 
     //ПРОВЕРКА НА ПОБЕДИТЕЛЯ
-    private String winner( Map mapGame, Model model) {
-
-
-       // String x = "x";
-
-
+    private Boolean winner( Map mapGame, Model model, String winn) {
         //проверка горизонтали
+//        Boolean boo = false;
         for (int i = 0; i < 9; i += 3) {
-            if (String.valueOf(mapGame.get(i)).equals(mapGame.get(9)) && String.valueOf(mapGame.get(i + 1)).equals(mapGame.get(9)) && String.valueOf(mapGame.get(i + 2)).equals(mapGame.get(9))) {
+            if (mapGame.get(String.valueOf(i)).equals(mapGame.get("9")) && mapGame.get(String.valueOf(i + 1)).equals(mapGame.get("9")) &&
+                    mapGame.get(String.valueOf(i + 2)).equals(mapGame.get("9"))) {
+                model.addAttribute("winner", winn);
 
-
-                model.addAttribute("winner", mapGame.get(9));
-
-                return "pages/winner";
+                return true;
             }
         }
         //проверка вертикали
-        for (int i = 0; i < 9; i++) {
-            if (mapGame.get(i).equals(mapGame.get(9)) && mapGame.get(i + 3).equals(mapGame.get(9)) && mapGame.get(i + 6).equals(mapGame.get(9))) {
-                return "pages/winner";
+        for (int i = 0; i < 3; i++) {
+            if (mapGame.get(String.valueOf(i)).equals(mapGame.get("9")) &&mapGame.get(String.valueOf(i + 3)).equals(mapGame.get("9")) &&
+                    mapGame.get(String.valueOf(i + 6)).equals(mapGame.get("9"))) {
+                model.addAttribute("winner", winn);
+                return true;
             }
         }
         //проверка диагонали 2-4-6
-        if (mapGame.get(2).equals(mapGame.get(9)) && mapGame.get(4).equals(mapGame.get(9)) && mapGame.get(6).equals(mapGame.get(9))) {
-
-            return "pages/winner";
+        if (mapGame.get("2").equals(mapGame.get("9")) &&mapGame.get("4").equals(mapGame.get("9")) &&
+                mapGame.get("6").equals(mapGame.get("9"))) {
+            model.addAttribute("winner", winn);
+            return true;
         }
         //проверка диагонали 0-4-8
-        if (mapGame.get(0).equals(mapGame.get(9)) && mapGame.get(4).equals(mapGame.get(9)) && mapGame.get(8).equals(mapGame.get(9))) {
-
-            return "pages/winner";
+        if (mapGame.get("0").equals(mapGame.get("9")) &&mapGame.get("4").equals(mapGame.get("9")) &&
+                mapGame.get("8").equals(mapGame.get("9"))) {
+            model.addAttribute("winner", winn);
+            return true;
         }
         //если нет выйгрыша
         for (int i = 0; i < 9; i++) {
-            if (mapGame.get(i) == null || mapGame.get(i) == "") {
-                return null;
+            if (mapGame.get(String.valueOf(i)).equals(null) || mapGame.get(String.valueOf(i)).equals("")) {
+                return false;
             }
         }
         //ничья
-        return "pages/winner";
+        winn="Ничья";
+        model.addAttribute("winner", winn);
+        return true;
     }
 }
